@@ -1,0 +1,71 @@
+,missing_count
+index,0
+timestamp,0
+Time,0
+r.ankle Acceleration X (m/s^2),0
+r.ankle Acceleration Y (m/s^2),0
+r.ankle Acceleration Z (m/s^2),0
+r.ankle Angular Velocity X (rad/s),0
+r.ankle Angular Velocity Y (rad/s),0
+r.ankle Angular Velocity Z (rad/s),0
+r.ankle Magnetic Field X (uT),0
+r.ankle Magnetic Field Y (uT),0
+r.ankle Magnetic Field Z (uT),0
+l.ankle Acceleration X (m/s^2),0
+l.ankle Acceleration Y (m/s^2),0
+l.ankle Acceleration Z (m/s^2),0
+l.ankle Angular Velocity X (rad/s),0
+l.ankle Angular Velocity Y (rad/s),0
+l.ankle Angular Velocity Z (rad/s),0
+l.ankle Magnetic Field X (uT),0
+l.ankle Magnetic Field Y (uT),0
+l.ankle Magnetic Field Z (uT),0
+r.thigh Acceleration X (m/s^2),0
+r.thigh Acceleration Y (m/s^2),0
+r.thigh Acceleration Z (m/s^2),0
+r.thigh Angular Velocity X (rad/s),0
+r.thigh Angular Velocity Y (rad/s),0
+r.thigh Angular Velocity Z (rad/s),0
+r.thigh Magnetic Field X (uT),0
+r.thigh Magnetic Field Y (uT),0
+r.thigh Magnetic Field Z (uT),0
+l.thigh Acceleration X (m/s^2),0
+l.thigh Acceleration Y (m/s^2),0
+l.thigh Acceleration Z (m/s^2),0
+l.thigh Angular Velocity X (rad/s),0
+l.thigh Angular Velocity Y (rad/s),0
+l.thigh Angular Velocity Z (rad/s),0
+l.thigh Magnetic Field X (uT),0
+l.thigh Magnetic Field Y (uT),0
+l.thigh Magnetic Field Z (uT),0
+head Acceleration X (m/s^2),0
+head Acceleration Y (m/s^2),0
+head Acceleration Z (m/s^2),0
+head Angular Velocity X (rad/s),0
+head Angular Velocity Y (rad/s),0
+head Angular Velocity Z (rad/s),0
+head Magnetic Field X (uT),0
+head Magnetic Field Y (uT),0
+head Magnetic Field Z (uT),0
+sternum Acceleration X (m/s^2),0
+sternum Acceleration Y (m/s^2),0
+sternum Acceleration Z (m/s^2),0
+sternum Angular Velocity X (rad/s),0
+sternum Angular Velocity Y (rad/s),0
+sternum Angular Velocity Z (rad/s),0
+sternum Magnetic Field X (uT),0
+sternum Magnetic Field Y (uT),0
+sternum Magnetic Field Z (uT),0
+waist Acceleration X (m/s^2),0
+waist Acceleration Y (m/s^2),0
+waist Acceleration Z (m/s^2),0
+waist Angular Velocity X (rad/s),0
+waist Angular Velocity Y (rad/s),0
+waist Angular Velocity Z (rad/s),0
+waist Magnetic Field X (uT),0
+waist Magnetic Field Y (uT),0
+waist Magnetic Field Z (uT),0
+subject,0
+trial_type,0
+label,0
+Time_s,0

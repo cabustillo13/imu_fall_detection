@@ -10,6 +10,49 @@
 
 ## 1) Considerations
 
+### 0) Insights from Exploratory Data Analysis (EDA)
+
+**You can find all the results, images and report at `src/` folder.**
+
+**Based on the provided EDA outputs, I can gather several critical insights about the dataset that will directly inform my pre-training considerations and model strategy**:
+
+#### 0.1) Missing Values
+The `missing_values.csv` file shows that there are no missing values across any of the features. All sensor data and time information are complete.
+
+#### 0.2) Class Balance
+Based on `class_balance.csv` and `class_counts.png`:
+- ADLs: 398.921 instances (41.89%)
+- Falls: 322.718 instances (33.89%)
+- Near_Falls: 230.526 instances (24.22%)
+
+**This clearly indicates a significant class imbalance.**
+
+#### 0.3) Sample Time Series
+Based on `sample_ts.png`:
+- The sample time series plot for "head Acceleration X" (for a 'Fall' event) shows distinct dynamic changes. 
+- There appear to be rapid fluctuations or peaks in acceleration during the fall event, which would be characteristic of such an incident.
+- This visual confirmation suggests that the raw sensor data contains discriminative information. **The feature engineering process (calculating mean and variance over windows) aims to capture these dynamic characteristics.**
+
+#### 0.4) Histograms and Outliers of Magnitudes
+
+Based on `hist_*.png`, `box_*.png` and `outliers.csv`:
+
+**Histograms:** The histograms show a distribution heavily skewed towards lower magnitudes, with a long tail extending to higher values. 
+<br>This is typical for acceleration magnitudes, where most of the time is spent in relatively low-activity states, but high magnitude events (like impacts or sudden movements) are rare but important.
+
+**Boxplots:** The boxplots visually confirm the presence of **many outliers** at the higher end of the magnitude spectrum for both head and left ankle acceleration. These are the points extending far beyond the whiskers.
+
+**Outlier Nature:** It's highly probable that these "outliers" are not measurement errors but rather meaningful extreme events corresponding to sudden movements, impacts, or precisely the fall events we want to detect.
+
+**Handling Strategy: So I don't blindly remove these outliers.** 
+<br>Removing them would be equivalent to discarding critical information that differentiates falls from ADLs.
+
+#### 0.5) Correlation
+
+The heatmap shows the correlation between the acceleration magnitude features from different body locations.
+
+High correlations between features suggest some redundancy. While tree-based models like Random Forest and XGBoost can handle correlated features reasonably well, highly correlated features don't add much new information.
+
 ### 1) Classification Approach: __Binary__ vs. Multi-class
 
 Based on the objectives of the "Fall Detection Challenge" and insights from the provided research paper, I have opted to frame this problem as a **binary classification task**.
@@ -40,21 +83,21 @@ Based on this transformation, I selected the following models:
 
 ---
 
-#### 1) Random Forest (RF)
+#### 2.1) Random Forest (RF)
 - A robust, non-linear ensemble model ideal for **tabular data with mixed signal patterns**.
 - Naturally handles variable interactions and is resilient to noise and feature scaling.
 - Serves as a strong and interpretable baseline for classification.
 
 ---
 
-#### 2) Support Vector Machine (SVM)
+#### 2.2) Support Vector Machine (SVM)
 - Well-suited for high-dimensional, non-linearly separable data when using the RBF kernel.
 - Particularly effective for **binary classification problems with complex decision boundaries**.
 - While sensitive to **class imbalance**, it benefits from techniques like class weighting or resampling.
 
 ---
 
-#### 3) XGBoost
+#### 2.3) XGBoost
 - A high-performance gradient boosting algorithm **optimized for tabular data**.
 - Captures non-linear relationships and variable interactions effectively.
 - Especially useful in scenarios with limited data but rich engineered features.
@@ -68,7 +111,7 @@ By transforming time-series data into a structured, window-based feature matrix,
 
 Given the nature of the fall detection problem, where class imbalance is present (**fall events are less frequent than non-falls**), selecting appropriate evaluation metrics is critical to ensure that the model performs well on both classes —> especially the minority class (falls).
 
-#### Primary Objective
+#### 3.1) Primary Objective
 The main goal is to **maximize the F1-score**, particularly for the fall class (`label = 1`), since it balances **precision** and **recall**:
 
 - **Precision** answers: *Of all predicted falls, how many were actually falls?*
@@ -77,7 +120,7 @@ The main goal is to **maximize the F1-score**, particularly for the fall class (
 
 ---
 
-#### Why these metrics?
+#### 3.2) Why these metrics?
 
 | Metric      | Why it matters here                                         |
 |-------------|--------------------------------------------------------------|
@@ -101,7 +144,7 @@ In an **imbalanced classification problem** such as fall detection, relying sole
 
 ## 2) Final Results
 
-### 1) Random Forest
+### 2.1) Random Forest
 
 **Hypertuning config params:**
 ```
@@ -127,7 +170,7 @@ ROC AUC: 0.8501
 **Model File Size** 
 <br>`4.06 MB`
 
-### 2) SVM
+### 2.2) SVM
 
 **Hypertuning config params:**
 ```
@@ -153,7 +196,7 @@ ROC AUC: 0.7828
 **Model File Size**
 <br>`826 KB`
 
-### 3) XGBoost
+### 2.3) XGBoost
 
 **Hypertuning config params:**
 ```
