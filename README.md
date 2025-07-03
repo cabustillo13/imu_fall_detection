@@ -1,6 +1,72 @@
-# Inertial Measurement Unit Fall Detection
+<p align="center">
+ <img width="100px" src="src/fall_logo.svg" align="center" alt="Inertial Measurement Unit Fall Detection" />
+ <h2 align="center">Inertial Measurement Unit Fall Detection</h2>
+ <p align="center"><b>By Carlos Bustillo | AI Engineer</b></p>
 
-## 0) Research
+</p>
+  <p align="center">
+    <a href="https://github.com/cabustillo13/imu_fall_detection/actions/new">
+      <img alt="Tests Passing" src="https://github.com/anuraghazra/github-readme-stats/workflows/Test/badge.svg" />
+    </a>
+        <a href="https://github.com/cabustillo13/imu_fall_detection/issues">
+      <img alt="Issues" src="https://img.shields.io/github/issues/cabustillo13/imu_fall_detection?color=0088ff" />
+    </a>
+    <a href="https://github.com/cabustillo13/imu_fall_detection/pulls">
+      <img alt="GitHub pull requests" src="https://img.shields.io/github/issues-pr/cabustillo13/imu_fall_detection?color=0088ff" />
+    </a>
+</p>
+
+## 0) How to Run This Project
+
+This project has been organized in modular, reproducible steps using Jupyter Notebooks.
+
+### 0.0) Clone the repository
+```
+git clone https://github.com/cabustillo13/imu_fall_detection.git
+cd imu_fall_detection/
+```
+
+### 0.1) Add the dataset
+Place `the AI_ML_Challenge/` folder (the dataset root) in the same directory where the notebooks are.
+
+Your folder structure should look like this:
+```
+imu_fall_detection/
+├── AI_ML_Challenge/
+├── 0__EDA.ipynb
+├── 1__Model_Development.ipynb
+└── 2__Hyperparameter_Tuning.ipynb
+```
+
+### 0.2) Install dependencies
+
+**Option A: Run on Google Colab (recommended)**
+<br>This project was primarily developed using Google Colab, which includes most scientific libraries by default.
+<br>Each notebook includes a small cell at the top that installs only the extra dependencies required.
+
+**Option B: Run locally (Python 3.10+)**
+
+- It's recommended to create a virtual environment:
+   ```
+   python3 -m venv .venv
+   source .venv/bin/activate   # or .venv\Scripts\activate on Windows
+   ```
+
+- Then install dependencies using the cleaned `requirements.txt`:
+  ```
+  pip3 install -r requirements.txt
+  ```
+  The `requirements.txt` file was manually curated to include **only the essential packages** for this project, **avoiding unnecessary memory bloat caused by Colab's default environment**.
+
+### 0.3) Notebook Execution Order
+
+Please follow this exact order to reproduce results and models:
+
+- `0__EDA.ipynb` -> Exploratory Data Analysis and Feature Extraction -> Get cleaned data for training.
+- `1__Model_Development.ipynb` -> Baseline models, evaluation, comparison
+- `2__Hyperparameter_Tuning.ipynb` -> Grid Search / Model optimization
+
+## 1) Research
 
 **Before starting any project, I always research information to better understand the problem and avoid reinventing the wheel**. I enjoy bridging the gap between scientific publications and the project at hand, as this saves implementation time, reveals what has and hasn't worked in research, allows for analysis of strategies used in papers, and enables their adaptation to our project.
 <br>All of this translates into better and more agile delivery times.
@@ -8,18 +74,18 @@
 - [Inertial Measurement Unit Fall Detection Dataset](https://www.frdr-dfdr.ca/repo/dataset/6998d4cd-bd13-4776-ae60-6d80221e0365)
 - [Validation of accuracy of SVM-based fall detection system using real-world fall and non-fall datasets](https://pdfs.semanticscholar.org/8220/032093e94c51080dd28b2c9eb7f4b7e5c191.pdf)
 
-## 1) Considerations
+## 2) Considerations
 
-### 0) Insights from Exploratory Data Analysis (EDA)
+### 2.0) Insights from Exploratory Data Analysis (EDA)
 
 **You can find all the results, images and report at `src/` folder.**
 
 **Based on the provided EDA outputs, I can gather several critical insights about the dataset that will directly inform my pre-training considerations and model strategy**:
 
-#### 0.1) Missing Values
+#### 2.0.1) Missing Values
 The `missing_values.csv` file shows that there are no missing values across any of the features. All sensor data and time information are complete.
 
-#### 0.2) Class Balance
+#### 2.0.2) Class Balance
 Based on `class_balance.csv` and `class_counts.png`:
 - ADLs: 398.921 instances (41.89%)
 - Falls: 322.718 instances (33.89%)
@@ -27,13 +93,13 @@ Based on `class_balance.csv` and `class_counts.png`:
 
 **This clearly indicates a significant class imbalance.**
 
-#### 0.3) Sample Time Series
+#### 2.0.3) Sample Time Series
 Based on `sample_ts.png`:
 - The sample time series plot for "head Acceleration X" (for a 'Fall' event) shows distinct dynamic changes. 
 - There appear to be rapid fluctuations or peaks in acceleration during the fall event, which would be characteristic of such an incident.
 - This visual confirmation suggests that the raw sensor data contains discriminative information. **The feature engineering process (calculating mean and variance over windows) aims to capture these dynamic characteristics.**
 
-#### 0.4) Histograms and Outliers of Magnitudes
+#### 2.0.4) Histograms and Outliers of Magnitudes
 
 Based on `hist_*.png`, `box_*.png` and `outliers.csv`:
 
@@ -47,13 +113,13 @@ Based on `hist_*.png`, `box_*.png` and `outliers.csv`:
 **Handling Strategy: So I don't blindly remove these outliers.** 
 <br>Removing them would be equivalent to discarding critical information that differentiates falls from ADLs.
 
-#### 0.5) Correlation
+#### 2.0.5) Correlation
 
 The heatmap shows the correlation between the acceleration magnitude features from different body locations.
 
 High correlations between features suggest some redundancy. While tree-based models like Random Forest and XGBoost can handle correlated features reasonably well, highly correlated features don't add much new information.
 
-### 1) Classification Approach: __Binary__ vs. Multi-class
+### 2.1) Classification Approach: __Binary__ vs. Multi-class
 
 Based on the objectives of the "Fall Detection Challenge" and insights from the provided research paper, I have opted to frame this problem as a **binary classification task**.
 
@@ -75,7 +141,7 @@ Therefore, my classification system defines the classes as follows:
 - Negative Class (0): ADLs (Activities of Daily Living) + Near_Falls
 
 
-### 2) Model Selection Justification
+### 2.2) Model Selection Justification
 
 After preprocessing the IMU time-series signals, I applied a **sliding window approach** and extracted statistical features such as **mean**, **variance**, and **magnitude** across sensor axes. This transformation converts the original sequential data into a **tabular structure**, which is well-suited for classical machine learning classifiers.
 
@@ -83,21 +149,21 @@ Based on this transformation, I selected the following models:
 
 ---
 
-#### 2.1) Random Forest (RF)
+#### 2.2.1) Random Forest (RF)
 - A robust, non-linear ensemble model ideal for **tabular data with mixed signal patterns**.
 - Naturally handles variable interactions and is resilient to noise and feature scaling.
 - Serves as a strong and interpretable baseline for classification.
 
 ---
 
-#### 2.2) Support Vector Machine (SVM)
+#### 2.2.2) Support Vector Machine (SVM)
 - Well-suited for high-dimensional, non-linearly separable data when using the RBF kernel.
 - Particularly effective for **binary classification problems with complex decision boundaries**.
 - While sensitive to **class imbalance**, it benefits from techniques like class weighting or resampling.
 
 ---
 
-#### 2.3) XGBoost
+#### 2.2.3) XGBoost
 - A high-performance gradient boosting algorithm **optimized for tabular data**.
 - Captures non-linear relationships and variable interactions effectively.
 - Especially useful in scenarios with limited data but rich engineered features.
@@ -107,11 +173,11 @@ Based on this transformation, I selected the following models:
 
 By transforming time-series data into a structured, window-based feature matrix, I'm able to leverage **powerful tree-based models and kernel-based methods** to address the fall detection task efficiently —> without requiring deep learning architectures at this stage.
 
-### 3) Evaluation Metrics Justification
+### 2.3) Evaluation Metrics Justification
 
 Given the nature of the fall detection problem, where class imbalance is present (**fall events are less frequent than non-falls**), selecting appropriate evaluation metrics is critical to ensure that the model performs well on both classes —> especially the minority class (falls).
 
-#### 3.1) Primary Objective
+#### 2.3.1) Primary Objective
 The main goal is to **maximize the F1-score**, particularly for the fall class (`label = 1`), since it balances **precision** and **recall**:
 
 - **Precision** answers: *Of all predicted falls, how many were actually falls?*
@@ -120,7 +186,7 @@ The main goal is to **maximize the F1-score**, particularly for the fall class (
 
 ---
 
-#### 3.2) Why these metrics?
+#### 2.3.2) Why these metrics?
 
 | Metric      | Why it matters here                                         |
 |-------------|--------------------------------------------------------------|
@@ -142,9 +208,9 @@ In an **imbalanced classification problem** such as fall detection, relying sole
 <br>**Model size can influence model selection decisions by impacting both performance and deployability.**
 
 
-## 2) Final Results
+## 3) Final Results
 
-### 2.1) Random Forest
+### 3.1) Random Forest
 
 **Hypertuning config params:**
 ```
@@ -170,7 +236,7 @@ ROC AUC: 0.8501
 **Model File Size** 
 <br>`4.06 MB`
 
-### 2.2) SVM
+### 3.2) SVM
 
 **Hypertuning config params:**
 ```
@@ -196,7 +262,7 @@ ROC AUC: 0.7828
 **Model File Size**
 <br>`826 KB`
 
-### 2.3) XGBoost
+### 3.3) XGBoost
 
 **Hypertuning config params:**
 ```
@@ -233,7 +299,7 @@ While both **XGBoost** and **Random Forest** achieved strong performance, **XGBo
 
 This makes XGBoost the **most balanced choice** in terms of both **performance and deployability**.
 
-## 3) Next Steps
+## 4) Next Steps
 In my professional experience, achieving an **F1-score above 70%** is a solid starting point during the research phase. Of course, there are industry-specific applications where higher performance thresholds are required (e.g., healthcare, fintech). However, for this **initial research sprint**, the current results are **acceptable and actionable**.
 
 With additional time and iterations, future sprints can focus on:
